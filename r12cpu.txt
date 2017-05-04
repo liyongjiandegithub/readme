@@ -1,0 +1,106 @@
+cd /usr/local/dx7753/src/utils/d7vir/
+./d7vir_add -i 7 -f 1024 -n 1 -a 0
+
+Step 1
+cd /usr/local/dx7753/src/utils/d7vir/
+./d7vir_add -i 7 -f 1024 -n 1 -a 0
+i = 7, f = 1024, n = 1,
+allocated:0 == 0
+
+Step 2
+[root@bj-ucs04 dale]# sh R12CX_Inverse_Telecine_0015.sh 7
+
+Step 3
+Update  chip ID and port number then run:
+[root@bj-ucs04 dale]# sh R12CX_Inverse_Telecine_0015_IPIn.sh
+
+Step 4
+Open shell to watch log:
+[root@bj-ucs04 ~]# cd /usr/local/dx7753/bin/
+[root@bj-ucs04 bin]# ./vuart -c 7 &
+cd /usr/local/dx7753/bin/
+./vuart -c 7 &
+[1] 7870
+[root@bj-ucs04 bin]# vuart: chip 7 port 17000 ip_base 10.0.0.0
+  VD7 7 : console telnet <host> 17006
+debug dxopen intEnabled = 0
+
+[root@bj-ucs04 bin]# telnet localhost 17006
+
+
+Note: USC allocation
+FW: https://wiki.magnumsemi.com/bin/view/SWEng/CiscoUCSInfo
+
+[root@bj-ucs04 d7vir]# ps au
+To see who is using which chip ID.
+
+
+Get cware source code from : 
+http://limbus/swbuilds/sources/r12cpu.447/
+Make new dir store this files:
+tar -xzf cware.gz
+ 
+Full build:
+cd /root/dale/cware/src/cware/ 
+make clean comp all cpu=x86 FWROOT=/root/dale/prebuild/fw_comp/build
+ 
+Build binary:
+cd /root/dale/cware/src/cware/sequencers/xcode/interface/ProXCodeHostIFApp 
+make clean all platform=cpu_intel_xeon cpu=x86 FWROOT=/root/dale/prebuild/fw_comp/build
+ 
+cd /root/dale/cware/x86/os_wrapper/linux
+make clean all cpu=x86
+ 
+cd /root/dale/cware/x86/osal
+make clean all cpu=x86
+ 
+cd /root/dale/cware/x86/bsp
+make clean all cpu=x86
+ 
+cd /root/dale/cware/x86/startup
+make clean all cpu=x86 FWROOT=/root/dale/prebuild/fw_comp/build
+
+ 
+Build app:
+cd /usr/local/dx7753/StatMux2/BaseClass/
+make clean all R12CPU=1
+cd -
+cd /usr/local/dx7753/StatMux2/TSCombiner/
+make clean all R12CPU=1
+cd -
+cd /usr/local/dx7753/StatMux2/TSRetriever/
+make clean all R12CPU=1
+cd -
+cd /usr/local/dx7753/StatMux2/Remux/
+make clean all R12CPU=1
+cd -
+cd /usr/local/dx7753/StatMux2/tsOverPCIEApp
+make clean all  R12CPU=1
+cd -
+
+
+To run private binary:
+Make new bin at: /tmp/dale/cware/x86/startup
+Step 1. 
+cd /usr/local/dx7753/bin/
+ ./multiInit.pl -product 12CX -startChip 8
+Step 2.
+cd /tmp/dale/cware/x86/startup
+./r12c -c 8 &
+Step 3. 
+Run origanal script except " #./multiInit.pl -product 12CX -startChip $chip;  #./multiRun.pl -startChip $chip;":
+sh R12CX_DP_Smoke_0009.sh
+
+
+RPM:
+/sw/builds/r12cpu.447/CWARE_R12CPU.447_0102/apps/linux_x86/centos
+
+
+How to debug on cpu:
+1. Enable debug
+ulimit -c unlimited
+2. Run case
+3. Get core data under /usr/local/dx7753, and run following to get debug information.
+gdb ./r12c core.xxxx
+ 
+
