@@ -98,6 +98,10 @@ git config --global --unset user.email
 #error: you need to resolve your current index first
 #Discard current merge
 git reset --merge  
+#Discard add new file or/and direcotry
+git clean -f
+git clean -df
+
 
 #Set upstream branch
 git branch --set-upstream debug origin/debug
