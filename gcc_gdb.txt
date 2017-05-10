@@ -1,0 +1,12 @@
+#gcc compile option
+#link pthread lib to use pthread_mutex_* from pthread instead of libc.so, the function in libc.so do nothing.
+gcc -o a.out -lpthread source.c
+
+# ldd prints the shared libraries required by each program or shared library specified on the command line.
+ldd a.out
+
+#Or use objdump as a safe method to ...
+objdump -p a.out |grep NEEDED
+
+#look up symbol in shared library libc.so
+readelf -s /lib64/libc.so.6 |grep pthread_mutex
