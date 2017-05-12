@@ -41,9 +41,22 @@ objcopy --add-gnu-debuglink=foo.debug foo
 
 
 #Start GDB with PID
-gdb PID
-gdb -p ***
+gdb 7658 -tui
+gdb -p 7658
+# -tui is set to enable layout style debugging, 
+#we can also use ctrl+x and ctrl+a to switch
+
 #or attach PID after start
-(gdb) attach PID
+(gdb) attach 7658
 #Add symbol file 
 (gdb) symbol-file Server.symbol
+(gdb) symbol-file ~/yli/git_r12cpu/cware-repo/x86/startup/r12c.debug
+#or(?)
+(gdb) file ~/yli/git_r12cpu/cware-repo/x86/startup/r12c.debug
+
+##Command parameters
+(gdb) run <args>
+(gdb) set  <args>
+(gdb) show args
+
+
