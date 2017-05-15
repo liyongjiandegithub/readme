@@ -1,0 +1,102 @@
+<html>
+	<head>
+    <title>Faucet Web Server</title>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+
+	</head>
+	
+	<body bgcolor="#c0c0c0">	
+		<h1 align="center">Faucet Video/Audio Mall</h1>	
+
+		<p align="center">date</p>  
+
+		<form name="configform" action="" method="post"> 
+			<p align="center"><input type="submit" name="xcodeopt" value="Start"></p>
+		</form>
+
+		<form align="center" name="configform2" action="" method="post"> 
+			<input name="programState" type="button" onclick = "myfunction()" id="programState" value="Start"/>
+		</form>
+		<p>
+			<b>To:</b> <span id="to"></span><br />
+			<b>From:</b> <span id="from"></span><br />
+			<b>Message:</b> <span id="message"></span>
+		</p>
+		<p>
+			<b>To:</b> <span id="fileTo"></span><br />
+			<b>From:</b> <span id="fileFrom"></span><br />
+			<b>Message:</b> <span id="fileMessage"></span>
+		</p>
+		<script type="text/javascript">
+		function myfunction()
+		{
+			alert(document.getElementsByName("configform2"));
+			alert(document.getElementById("programState"));
+			alert(document.getElementsByName("programState"));
+			if(document.getElementById("programState").innerHTML == "Start")
+				document.getElementById("programState").innerHTML = "Stop";
+			else
+				document.getElementById("programState").innerHTML = "Start1";
+			document.configform2.submit();
+		}
+
+		txt="<note>\
+			<execOpt>Start</execOpt>\
+			<to>George?</to>\
+			<from>John</from>\
+			<programState>Start0</programState>\
+			<body>Don't forget the meeting!</body>\
+			</note>";
+
+		if (window.DOMParser)
+		{
+			parser=new DOMParser();
+			xmlDoc=parser.parseFromString(txt,"text/xml");
+		}
+		else // Internet Explorer
+		{
+			xmlDoc=new ActiveXObject("Microsoft.XMLDOM");
+			xmlDoc.async="false";
+			xmlDoc.loadXML(txt);
+		}
+
+		document.getElementById("to").innerHTML=xmlDoc.getElementsByTagName("to")[0].childNodes[0].nodeValue;
+		document.getElementById("from").innerHTML=xmlDoc.getElementsByTagName("from")[0].childNodes[0].nodeValue;
+		document.getElementById("message").innerHTML=xmlDoc.getElementsByTagName("body")[0].childNodes[0].nodeValue;
+		document.getElementById("programState").innerHTML=xmlDoc.getElementsByTagName("programState")[0].childNodes[0].nodeValue;
+		//alert(document.getElementById("xcodeOpt").innerHTML);
+		//alert(xmlDoc.getElementsByTagName("xcodeOpt")[0].childNodes[0].nodeValue);
+		document.configform2.xcodeOpt.value=xmlDoc.getElementsByTagName("xcodeOpt")[0].childNodes[0].nodeValue;
+		xmlDoc.getElementsByTagName("from")[0].childNodes[0].nodeValue = "David"
+
+
+		try //Internet Explorer
+		  {
+		  xmlDoc=new ActiveXObject("Microsoft.XMLDOM");
+		  }
+		catch(e)
+		  {
+		  try //Firefox, Mozilla, Opera, Chrome, etc.
+		    {
+		    xmlDoc=document.implementation.createDocument("","",null);
+		    }
+		  catch(e) {alert(e.message)}
+		  }
+		try 
+		  {
+		  xmlDoc.async=false;
+		  xmlDoc.load("config.xml");
+		  document.write("xmlDoc is loaded, ready for use");
+		  }
+		catch(e) {alert(e.message)}
+		document.getElementById("fileFrom").innerHTML=
+		xmlDoc.getElementsByTagName("from")[0].childNodes[0].nodeValue;
+		xmlDoc.getElementsByTagName("from")[0].childNodes[0].nodeValue = "David"
+
+		</script>
+
+
+	</body> 
+</html>
+
