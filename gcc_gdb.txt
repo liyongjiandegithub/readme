@@ -10,3 +10,53 @@ objdump -p a.out |grep NEEDED
 
 #look up symbol in shared library libc.so
 readelf -s /lib64/libc.so.6 |grep pthread_mutex
+
+############GDB#################################
+#build binary with -g option as current version;
+gcc -g ....
+#Usage: objcopy [option(s)] in-file [out-file]
+# Copies a binary file, possibly transforming it in the process
+# The options are:
+#  -g --strip-debug                 Remove all debugging symbols & sections
+#     --only-keep-debug             Strip everything but the debug information
+#     --add-gnu-debuglink=<file>    Add section .gnu_debuglink linking to <file>
+#
+
+#Usage: strip <option(s)> in-file(s)
+# Removes symbols and sections from files
+# The options are:
+#   -g -S -d --strip-debug           Remove all debugging symbols & sections
+#
+
+#Produce the separated executable / debugging information file pairs using the following commands:
+objcopy --only-keep-debug foo foo.debug
+
+#Do not copy debugging symbols or sections from the source file.
+objcopy --strip-debug foo
+#or
+strip -g foo
+
+#The debug link method needs the following additional command to also leave behind a debug link in foo:
+objcopy --add-gnu-debuglink=foo.debug foo
+
+
+#Start GDB with PID
+gdb 7658 -tui
+gdb -p 7658
+# -tui is set to enable layout style debugging, 
+#we can also use ctrl+x and ctrl+a to switch
+
+#or attach PID after start
+(gdb) attach 7658
+#Add symbol file 
+(gdb) symbol-file Server.symbol
+(gdb) symbol-file ~/yli/git_r12cpu/cware-repo/x86/startup/r12c.debug
+#or(?)
+(gdb) file ~/yli/git_r12cpu/cware-repo/x86/startup/r12c.debug
+
+##Command parameters
+(gdb) run <args>
+(gdb) set  <args>
+(gdb) show args
+
+
