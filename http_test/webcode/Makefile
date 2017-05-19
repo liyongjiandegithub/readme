@@ -12,5 +12,5 @@ start:$(OBJS)
 .c.o:
 	$(CC) -o $@ -c $<
 clean:
-	rm -f $(OBJS)
+	rm -f $(OBJS) $(EXEC)
 
