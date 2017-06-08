@@ -22,15 +22,13 @@ $(error 'FWROOT' is not defined)
 #    FWROOT = $(ROOT)/fw_release
 endif
 
-# licensing only in non-EAP licensing=1 builds
-ifndef EAP
+# licensing only in licensing=1 builds
 ifeq ("$(licensing)", "1")
 ifndef LICENSINGROOT
 ifdef licensingroot
 LICENSINGROOT := $(realpath $(licensingroot))
 else
 $(error 'LICENSINGROOT' or 'licensingroot' is not defined)
-endif
 endif
 endif
 endif
@@ -80,8 +78,7 @@ else
 endif
 #-lProXCodeHostIFUtil
 
-# add licensing includes and libs in non-EAP licensing=1 builds
-ifndef EAP
+# add licensing includes and libs in licensing=1 builds
 ifeq ("$(licensing)", "1")
 # non-EAP secure build: set licensing includes and libs to bring in content from licensingroot
 LICENSING_INCLUDES = -I$(LICENSINGROOT)/tools -I$(LICENSINGROOT)/LDK/Linux/API/Admin/C -I/usr/include/libxml2
@@ -98,18 +95,16 @@ ifeq "$(DEMO_VENDORCODE)" "1"
 CFLAGS += -DDEMO_VENDORCODE
 endif
 endif
-endif
 
 # always build the unsecure r12c binary
 TARGET_R12C = DXPerfMon r12c_unsec
-# add the secure r12c binary in non-EAP licensing=1 builds
+# add the secure r12c binary in licensing=1 builds
 # note that secure binary contains license checks, is not yet enveloped
-ifndef EAP
 ifeq ("$(licensing)", "1")
 TARGET_R12C += r12c_sec_must_envelope
 endif
-endif
 TARGET = $(TARGET_R12C)
+
 #LD = gcc
 #AR = ar
 CC = $(GCC_EXEC_PREFIX)gcc
@@ -133,15 +128,23 @@ r12c_unsec: r12c_unsec.o
 	# 1. create a symlink to gcc's libstdc++.a to prepare for static link
 	ln -fs `$(CC) $(CFLAGS) -print-file-name=libstdc++.a` libstdc++.a
 	# 2. link to the symlinked libstdc++.a explicitly rather than using
-	# -lstdc++. Note that libsdtdc++.a needs to be the last library linked.
+	# -lstdc++. Note that libstdc++.a needs to be the last library linked.
 	$(LD) $(LFLAGS) $^ $(ADDITIONAL_LIBS) -lstdc++ -o $@
 	# 3. can now delete the symlink
 	rm -f libstdc++.a
+ifdef EAP
+	# EAP unlicensed build has separate debuginfo
+	# make standalone debuginfo file from the binary
+	objcopy --only-keep-debug $@ $@.debug
+	# strip debug symbols from the binary
+	strip --strip-debug $@
+	# add a debug link from the binary to the debuginfo file
+	objcopy --add-gnu-debuglink=$@.debug $@
+endif
 
-# add envelope_utils from the licensing repo in non-EAP builds
-ifndef EAP
 ifeq ("$(licensing)", "1")
 envelope_utils.o: $(LICENSINGROOT)/tools/envelope_utils.c
+	# build envelope_utils from the licensing repo in licensing=1 builds
 	$(CC) -c $(CFLAGS) $(LICENSING_INCLUDES) $< -o $@
 r12c_sec_must_envelope.o: r12c.c
 	# build secure r12c object
@@ -157,11 +160,20 @@ r12c_sec_must_envelope: r12c_sec_must_envelope.o envelope_utils.o
 	# 1. create a symlink to gcc's libstdc++.a to prepare for static link
 	ln -fs `$(CC) $(CFLAGS) -print-file-name=libstdc++.a` libstdc++.a
 	# 2. link to the symlinked libstdc++.a explicitly rather than using
-	# -lstdc++. Note that libsdtdc++.a needs to be the last library linked.
+	# -lstdc++. Note that libstdc++.a needs to be the last library linked.
 	$(LD) $(LFLAGS) $^ $(ADDITIONAL_LIBS) $(LICENSING_LIBS) -lstdc++ -o $@
 	# 3. can now delete the symlink
 	rm -f libstdc++.a
-endif
+	# licensed builds always have separate debuginfo
+	# make standalone debuginfo file
+	objcopy --only-keep-debug $@ r12c_sec.debug
+	# strip debug symbols from the binary
+	# note this is not strictly necessary as the enveloper will also strip
+	strip --strip-debug $@
+	# add a debug link from the binary to the debuginfo file
+	# note this is not strictly useful as the enveloper will not preserve it
+	# but good practice to add it anyway
+	objcopy --add-gnu-debuglink=r12c_sec.debug $@
 endif
 
 DXPerfMon : DXPerfMon.o
@@ -171,7 +183,7 @@ DXPerfMon : DXPerfMon.o
 	$(CC) -c $(CFLAGS) -o $@ $<
 
 clean :
-	rm -f *~ *.o *.a $(TARGET_R12C)
+	rm -f *~ *.o *.a $(TARGET_R12C) *.debug
 	# always delete the unenveloped r12c_sec regardless
 	rm -f r12c_sec_must_envelope
 	# clean also the enveloped versions which are put here by top-level make
