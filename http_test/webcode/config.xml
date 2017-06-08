@@ -6,11 +6,13 @@
 	<heading>Reminder</heading>
 	<body>Don't forget the meeting!</body>
 	<input_channel>
+	<input_video_type>MPEG2</input_video_type>
 	<input_video_PID>1000</input_video_PID>
 	<input_PCR_PID>1001</input_PCR_PID>
 	<input_audio_PID>1002</input_audio_PID>
 	</input_channel>
 	<output_channel>
+	<input_video_type>H.264</input_video_type>
 	<output_video_PID>1000</output_video_PID>
 	<output_PCR_PID>1001</output_PCR_PID>
 	<output_audio_PID>1002</output_audio_PID>
