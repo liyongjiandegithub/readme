@@ -4,9 +4,10 @@ LIBRARY=-L./ -L$HOME/lib `xml2config --libs`
 
 CC = gcc
 SRCS = main.c\
-    test.c
+    parseFile.c\
+    parseBuffer.c
 OBJS = $(SRCS:.c=.o)
-EXEC = test
+EXEC = test 
 start:$(OBJS)
 	$(CC) -o $(EXEC) $(OBJS) -lpthread -lxml2 -g
 .c.o:

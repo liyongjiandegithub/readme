@@ -1,13 +1,14 @@
-<?xml version="1.0" encoding="ISO-8859-1"?>
-<!--  Copyright w3school.com.cn -->
+<?xml version="1.0" encoding="UTF-8"?>
 <note>
-	<state>George</state>
-	<to>George</to>
-	<from>John</from>
-	<heading>Reminder</heading>
-	<body>Don't forget the meeting!</body>
-	<input_video_PID>1000</input_video_PID>
-	<input_PCR_PID>1001</input_PCR_PID>
-	<input_audio_PID>1002</input_audio_PID>
-</note> 
-
+  <state>Initial</state>
+  <to>George</to>
+  <from>John</from>
+  <heading>Reminder</heading>
+  <body>Don't forget the meeting!</body>
+  <input_channel>
+  <input_video_PID>1000</input_video_PID>
+  <input_PCR_PID>1001</input_PCR_PID>
+  <input_audio_PID>1002</input_audio_PID>
+  </input_channel>
+  <category>1002</category>
+</note>
