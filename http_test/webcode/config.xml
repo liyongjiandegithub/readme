@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<!--  Copyright w3school.com.cn -->
-<note>
+<!--  Copyright http://www.faucet.com.cn/ -->
+<config>
+    <configTitle>Faucet Config</configTitle>
 	<systemState>initial</systemState>
 	<erroMessage>Everythins is fine!</erroMessage>
 	<heading>Reminder</heading>
@@ -19,5 +20,5 @@
 	<output_bitrate>5000000</output_bitrate>
 	<output_video_bitrate>1000000</output_video_bitrate>
 	</output_channel>
-</note> 
+</config> 
 

@@ -1,10 +1,8 @@
 .SUFFIXES:.c .o
 CC = gcc
 SRCS = webserver.c\
-    pub.c\
     xmlparser.c\
-    http_parser.c\
-    thread_work.c
+    http_parser.c
 OBJS = $(SRCS:.c=.o)
 EXEC = webserver
 start:$(OBJS)
