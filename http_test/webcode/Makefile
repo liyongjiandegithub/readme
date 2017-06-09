@@ -6,9 +6,9 @@ SRCS = webserver.c\
 OBJS = $(SRCS:.c=.o)
 EXEC = webserver
 start:$(OBJS)
-	$(CC) -o $(EXEC) $(OBJS) -lpthread
+	$(CC) -o $(EXEC) $(OBJS) -lpthread -lxml2
 .c.o:
-	$(CC) -o $@ -c $<
+	$(CC) -o $@ -c $< -I/usr/include/libxml2/
 clean:
 	rm -f $(OBJS) $(EXEC)
 

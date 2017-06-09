@@ -2,16 +2,24 @@
 <!--  Copyright http://www.faucet.com.cn/ -->
 <config>
     <configTitle>Faucet Config</configTitle>
-	<systemState>initial</systemState>
+	<sysStatus>initial</sysStatus>
+	<sysOperation>start</sysOperation>
 	<erroMessage>Everythins is fine!</erroMessage>
-	<heading>Reminder</heading>
-	<body>Don't forget the meeting!</body>
-	<input_channel>
+	<input>
+	<inputType>file</inputType>
+	</input>
+	<output>
+	<outputType>network</outputType>
+	<fileName>output.ts</fileName>
+	<ipAddress></ipAddress>
+	</output>
+	<inputChannel>
+	<inputChannelIndex>0</inputChannelIndex>
 	<input_video_type>MPEG2</input_video_type>
 	<input_video_PID>1000</input_video_PID>
 	<input_PCR_PID>1001</input_PCR_PID>
 	<input_audio_PID>1002</input_audio_PID>
-	</input_channel>
+	</inputChannel>
 	<output_channel>
 	<input_video_type>H.264</input_video_type>
 	<output_video_PID>1000</output_video_PID>

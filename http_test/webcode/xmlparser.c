@@ -1,434 +1,111 @@
-/* Copyright (c) 2010, huxingyi@msn.com
- *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
- * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
- * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
- * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
- * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
- * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
- */
+#include <libxml/parser.h>
+#include <libxml/tree.h>
+#include <libxml/xpath.h>
+#include <string.h> 
 
-#include "xmlparser.h"
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
-#include <ctype.h>
 
-#ifdef _WIN32
-#pragma warning(disable:4013)
-#endif
-
-int xml_parse(char* xml,
-    void* param,
-    xmlonopentag on_opentag,
-    xmlonclosetag on_closetag,
-    xmlonattribute on_attribute,
-    xmlonendattribute on_endattribute,
-    xmlontext on_text)
+int printNode(xmlNodePtr curNode)
 {
-    int status = XML_TEXT;
-    char tmp = 0;
-    char tmp2 = 0;
-    int callback_return = 0;
-    char* attr_name_start = 0;
-    char* attr_name_stop = 0;
-    char* attr_value_start = 0;
-    char* attr_value_stop = 0;
-    char* opentag_start = 0;
-    char* opentag_stop = 0;
-    char* closetag_start = 0;
-    char* closetag_stop = 0;
-    char* text_start = 0;
-    char* text_stop = 0;
-    int depth = 0;
-    char* p = xml;
-    int moved = 0;
-
-    //fapdebug("xml_parse.\n");
-
-    if (0 == p)
+    //printf("%s %d curNode %p\n",__FUNCTION__,__LINE__,curNode);
+    while(curNode != NULL)
     {
-        return XMLERR_PARAM;
-    }
-
-    while (0 != p &&
-        '\0' != (*p))
-    {
-        //printf("%c ", *p);
-
-        moved = 0;
-
-        switch (*p)
+        if(curNode->type == XML_ELEMENT_NODE)
         {
-        case '<': // <? <foo </foo <!-- <![CDATA[
-            {
-                if (XML_TEXT == status)
-                {
-                    if (0 == strncmp(p,
-                        XML_CDATA_OPEN_TAG,
-                        strlen(XML_CDATA_OPEN_TAG))) // <![CDATA[
-                    {
-                        status = XML_CDATA;
-                        p += strlen(XML_CDATA_OPEN_TAG);
-                        moved = 1;
-                        text_start = p;
-                    }
-                    else if (0 == strncmp(p,
-                        XML_COMMENT_OPEN_TAG,
-                        strlen(XML_COMMENT_OPEN_TAG))) // <!--
-                    {
-                        status = XML_COMMENT;
-                        p += strlen(XML_COMMENT_OPEN_TAG);
-                        moved = 1;
-                    }
-                    else if (0 == strncmp(p,
-                        XML_TEXT_CLOSE_TAG,
-                        strlen(XML_TEXT_CLOSE_TAG))) // </foo
-                    {
-                        status = XML_CLOSETAG_NAME;
-                        text_stop = p;
-                        if (0 != text_start && 0 != text_stop)
-                        {
-                            tmp = *text_stop;
-                            *text_stop = '\0';
-                            callback_return = on_text(param,
-                                depth,
-                                text_start);
-                            *text_stop = tmp;
-                            if (0 != callback_return)
-                            {
-                                return callback_return;
-                            }
-                            text_start = 0;
-                        }
-                        text_stop = 0;
-                        p += strlen(XML_TEXT_CLOSE_TAG);
-                        moved = 1;
-                        closetag_start = p;
-                    }
-                    else if (0 == strncmp(p,
-                        XML_HEAD_OPEN_TAG,
-                        strlen(XML_HEAD_OPEN_TAG))) // <?
-                    {
-                        status = XML_OPENTAG_NAME;
-                        p += strlen(XML_HEAD_OPEN_TAG);
-                        moved = 1;
-                        opentag_start = p;
-                    }
-                    else // <foo
-                    {
-                        status = XML_OPENTAG_NAME;
-                        opentag_start = p + 1;
-                    }
-                }
+            xmlChar* content;
+            content = xmlNodeGetContent(curNode);
+            printf("%d curNode %p [type %d] name %s Content %s\n",__LINE__,curNode, curNode->type, curNode->name, content);
+            xmlFree(content);
+            if (!xmlStrcmp(curNode->name, (const xmlChar*)"input_PCR_PID"))  
+            {  
+                xmlChar newContent[]="1000";
+                xmlNodeSetContent(curNode, newContent);
+                printf("%d curNode %p name %s Content =%s\n",__LINE__,curNode, curNode->name, newContent);
             }
-            break;
-        case '?': // ?>
-        case '/': // />
+            if(curNode->children != NULL)
             {
-                if (XML_ATTRIBUTE_PRE == status)
-                {
-                    if (0 != (p+1) && '>' == (*(p+1)))
-                    {
-                        callback_return = on_endattribute(param,
-                            depth);
-                        if (0 != callback_return)
-                        {
-                            return callback_return;
-                        }
-                        status = XML_TEXT;
-                        p += 2;
-                        moved = 1;
-                        callback_return = on_closetag(param,
-                            depth,
-                            "");
-                        if (0 != callback_return)
-                        {
-                            return callback_return;
-                        }
-                        --depth;
-                    }
-                }
-                else if (XML_OPENTAG_NAME == status)
-                {
-                    if (0 != (p+1) && '>' == (*(p+1)))
-                    {
-                        status = XML_TEXT;
-                        opentag_stop = p;
-                        p += 2;
-                        moved = 1;
-                        if (0 == opentag_start ||
-                            0 == opentag_stop)
-                        {
-                            return XMLERR_OPENTAG;
-                        }
-                        ++depth;
-                        tmp = *opentag_stop;
-                        *opentag_stop = '\0';
-                        callback_return = on_opentag(param,
-                            depth,
-                            opentag_start);
-                        *opentag_stop = tmp;
-                        if (0 != callback_return)
-                        {
-                            return callback_return;
-                        }
-                        opentag_start = 0;
-                        opentag_stop = 0;
-                        callback_return = on_endattribute(param,
-                            depth);
-                        if (0 != callback_return)
-                        {
-                            return callback_return;
-                        }
-                        callback_return = on_closetag(param,
-                            depth,
-                            "");
-                        if (0 != callback_return)
-                        {
-                            return callback_return;
-                        }
-                        --depth;
-                    }
-                    else
-                    {
-                        return XMLERR_OPENTAG;
-                    }
-                }
-            }
-            break;
-        case '>':
-            {
-                if (XML_ATTRIBUTE_PRE == status)
-                {
-                    callback_return = on_endattribute(param,
-                        depth);
-                    if (0 != callback_return)
-                    {
-                        return callback_return;
-                    }
-                    status = XML_TEXT;
-                    text_start = p + 1;
-                }
-                else if (XML_CLOSETAG_NAME == status)
-                {
-                    status = XML_TEXT;
-                    closetag_stop = p;
-                    if (0 == closetag_start ||
-                        0 == closetag_stop)
-                    {
-                        return XMLERR_CLOSETAG;
-                    }
-                    tmp = *closetag_stop;
-                    *closetag_stop = '\0';
-                    callback_return = on_closetag(param,
-                        depth,
-                        closetag_start);
-                    *closetag_stop = tmp;
-                    if (0 != callback_return)
-                    {
-                        return callback_return;
-                    }
-                    --depth;
-                    closetag_start = 0;
-                    closetag_stop = 0;
-                }
-                else if (XML_OPENTAG_NAME == status)
-                {
-                    status = XML_TEXT;
-                    text_start = p + 1;
-                    opentag_stop = p;
-                    if (0 == opentag_start ||
-                        0 == opentag_stop)
-                    {
-                        return XMLERR_OPENTAG;
-                    }
-                    ++depth;
-                    tmp = *opentag_stop;
-                    *opentag_stop = '\0';
-                    callback_return = on_opentag(param,
-                        depth,
-                        opentag_start);
-                    *opentag_stop = tmp;
-                    if (0 != callback_return)
-                    {
-                        return callback_return;
-                    }
-                    opentag_start = 0;
-                    opentag_stop = 0;
-                    callback_return = on_endattribute(param,
-                        depth);
-                    if (0 != callback_return)
-                    {
-                        return callback_return;
-                    }
-                }
-            }
-            break;
-        case '"':
-            {
-                if (XML_ATTRIBUTE_EQUAL == status)
-                {
-                    status = XML_ATTRIBUTE_VALUE;
-                    attr_value_start = p + 1;
-                }
-                else if (XML_ATTRIBUTE_VALUE == status)
-                {
-                    status = XML_ATTRIBUTE_PRE;
-                    attr_value_stop = p;
-                    if (0 == attr_name_start
-                        || 0 == attr_name_stop
-                        || 0 == attr_value_start
-                        || 0 == attr_value_stop)
-                    {
-                        return XMLERR_ATTRIBUTE;
-                    }
-                    tmp = *attr_name_stop;
-                    tmp2 = *attr_value_stop;
-                    *attr_name_stop = '\0';
-                    *attr_value_stop = '\0';
-                    callback_return = on_attribute(param,
-                        depth,
-                        attr_name_start,
-                        attr_value_start);
-                    *attr_name_stop = tmp;
-                    *attr_value_stop = tmp2;
-                    if (0 != callback_return)
-                    {
-                        return callback_return;
-                    }
-                    attr_name_start = 0;
-                    attr_name_stop = 0;
-                    attr_value_start = 0;
-                    attr_value_stop = 0;
-                }
-            }
-            break;
-        case '-': // -->
-            {
-                if (XML_COMMENT == status)
-                {
-                    if (0 == strncmp(p,
-                        XML_COMMENT_CLOSE_TAG,
-                        strlen(XML_COMMENT_CLOSE_TAG)))
-                    {
-                        status = XML_TEXT;
-                        p += strlen(XML_COMMENT_CLOSE_TAG);
-                        moved = 1;
-                    }
-                }
-            }
-            break;
-        case ']': // ]]>
-            {
-                if (XML_CDATA == status)
-                {
-                    if (0 == strncmp(p,
-                        XML_CDATA_CLOSE_TAG,
-                        strlen(XML_CDATA_CLOSE_TAG)))
-                    {
-                        status = XML_TEXT;
-                        text_stop = p;
-                        if (0 != text_start &&
-                            0 != text_stop)
-                        {
-                            tmp = *text_stop;
-                            *text_stop = '\0';
-                            callback_return = on_text(param,
-                                depth,
-                                text_start);
-                            *text_stop = tmp;
-                            if (0 != callback_return)
-                            {
-                                return callback_return;
-                            }
-                            text_start = 0;
-                        }
-                        text_stop = 0;
-                        p += strlen(XML_CDATA_CLOSE_TAG);
-                        moved = 1;
-                    }
-                }
-            }
-            break;
-        case '=':
-            {
-                if (XML_ATTRIBUTE_NAME == status)
-                {
-                    status = XML_ATTRIBUTE_EQUAL;
-                    if (0 == attr_name_stop)
-                    {
-                        attr_name_stop = p;
-                    }
-                }
-            }
-            break;
-        case ' ':
-        case '\t':
-        case '\r':
-        case '\n':
-            {
-                if (XML_ATTRIBUTE_NAME == status)
-                {
-                    if (0 == attr_name_stop)
-                    {
-                        attr_name_stop = p;
-                    }
-                }
-                else if (XML_OPENTAG_NAME == status)
-                {
-                    status = XML_ATTRIBUTE_PRE;
-                    opentag_stop = p;
-                    if (0 == opentag_start ||
-                        0 == opentag_stop)
-                    {
-                        return XMLERR_OPENTAG;
-                    }
-                    ++depth;
-                    tmp = *opentag_stop;
-                    *opentag_stop = '\0';
-                    callback_return = on_opentag(param,
-                        depth,
-                        opentag_start);
-                    *opentag_stop = tmp;
-                    if (0 != callback_return)
-                    {
-                        return callback_return;
-                    }
-                    opentag_start = 0;
-                    opentag_stop = 0;
-
-                }
-            }
-            break;
-        default:
-            {
-
-                if (XML_ATTRIBUTE_PRE == status)
-                {
-                    if (xml_isname(*p))
-                    {
-                        status = XML_ATTRIBUTE_NAME;
-                        attr_name_start = p;
-                    }
-                }
+                printNode(curNode->children);
             }
         }
-        if (!moved)
-        {
-            ++p;
-        }
+        //printf("%d curNode %p type %d name %s\n",__LINE__,curNode, curNode->type, curNode->name);
+        curNode = curNode->next;
     }
+}
 
-    if (0 != depth)
+int parseBuffer(char * buffer)
+{
+    xmlDocPtr pdoc;
+    xmlNodePtr curNode;
+    xmlChar* content;
+    printf("\n%s\n",__FUNCTION__);
+#if 1
+#if 0
+    char buffer[] = "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>\
+<note>\
+<state>George</state>\
+<to>George</to>\
+<from>John</from>\
+<heading>Reminder</heading>\
+<body>Don't forget the meeting!</body>\
+<input_video_PID>1000</input_video_PID>\
+<input_PCR_PID>1001</input_PCR_PID>\
+<input_audio_PID>1002</input_audio_PID>\
+</note> ";
+#endif
+    int size = strlen(buffer);
+    pdoc = xmlParseMemory(buffer, size);
+    if( pdoc == NULL)
     {
-        return XMLERR_UNMATCH;
+         printf("Fail to parse XML buffer.\n");
+    }
+#else
+    //pdoc = xmlParseFile("config.xml");
+    pdoc = xmlReadFile("config.xml", "UTF-8", XML_PARSE_NOBLANKS);
+    if( pdoc == NULL )
+    {
+         printf("Fail to parse XML file.\n");
+    }
+#endif
+    curNode = xmlDocGetRootElement(pdoc); 
+    if (NULL == curNode)
+    {
+       printf("empty document/n");
+       xmlFreeDoc(pdoc);
+       return -1;
+    }    
+    if (xmlStrcmp(curNode->name, BAD_CAST "config"))
+    {
+       printf("document of the wrong type, root node != note %s\n",curNode->name);
+       xmlFreeDoc(pdoc);
+       return -1;
     }
 
-    return XMLERR_OK;
+
+#if 1
+    printNode(curNode->children);
+#else
+    curNode = curNode->children;
+    while(curNode != NULL)
+    {
+        //printf("%d curNode %p name %s Content =%s\n",__LINE__,curNode, curNode->name, curNode->content);
+        content = xmlNodeGetContent(curNode);
+        printf("%d curNode %p name %s Content =%s\n",__LINE__,curNode, curNode->name, content);
+        if (!xmlStrcmp(curNode->name, (const xmlChar*)"state"))  
+        {  
+            xmlNodeSetContent(curNode, content);
+        }
+
+        xmlFree(content);
+        curNode = curNode->next;
+    }
+#endif
+    int filesize;
+    //filesize = xmlSaveFormatFileEnc("config.xml", pdoc, "gb2312",1);
+    filesize = xmlSaveFormatFileEnc("config3.xml", pdoc, "UTF-8",1);
+    if(filesize == -1)
+    {
+         printf("Fail to save XML to file.\n");
+    }
+
+    xmlFreeDoc(pdoc);
+    return 0; 
 }
