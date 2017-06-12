@@ -100,7 +100,7 @@ int parseBuffer(char * buffer)
 #endif
     int filesize;
     //filesize = xmlSaveFormatFileEnc("config.xml", pdoc, "gb2312",1);
-    filesize = xmlSaveFormatFileEnc("config3.xml", pdoc, "UTF-8",1);
+    filesize = xmlSaveFormatFileEnc("config.xml", pdoc, "UTF-8",1);
     if(filesize == -1)
     {
          printf("Fail to save XML to file.\n");

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!--  Copyright http://www.faucet.com.cn/ -->
+<config>
+    <configTitle>Faucet Config</configTitle>
+	<sysStatus>initial</sysStatus>
+	<sysOperation>start</sysOperation>
+	<erroMessage>Everythins is fine!</erroMessage>
+	<input>
+	<inputType>file</inputType>
+	</input>
+	<output>
+	<outputType>network</outputType>
+	<fileName>output.ts</fileName>
+	<ipAddress></ipAddress>
+	</output>
+	<inputChannel>
+	<inputChannelIndex>0</inputChannelIndex>
+	<input_video_type>MPEG2</input_video_type>
+	<input_video_PID>1000</input_video_PID>
+	<input_PCR_PID>1001</input_PCR_PID>
+	<input_audio_PID>1002</input_audio_PID>
+	</inputChannel>
+	<output_channel>
+	<input_video_type>H.264</input_video_type>
+	<output_video_PID>1000</output_video_PID>
+	<output_PCR_PID>1001</output_PCR_PID>
+	<output_audio_PID>1002</output_audio_PID>
+	<output_bitrate>5000000</output_bitrate>
+	<output_video_bitrate>1000000</output_video_bitrate>
+	</output_channel>
+</config> 
+
