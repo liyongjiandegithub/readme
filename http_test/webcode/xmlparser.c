@@ -72,7 +72,7 @@ int parseBuffer(char * buffer)
        xmlFreeDoc(pdoc);
        return -1;
     }    
-    if (xmlStrcmp(curNode->name, BAD_CAST "config"))
+    if (xmlStrcmp(curNode->name, BAD_CAST "faucetConfig"))
     {
        printf("document of the wrong type, root node != note %s\n",curNode->name);
        xmlFreeDoc(pdoc);

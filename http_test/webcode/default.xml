@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <!--  Copyright http://www.faucet.com.cn/ -->
-<config>
+<faucetConfig>
     <configTitle>Faucet Config</configTitle>
 	<sysStatus>initial</sysStatus>
 	<sysOperation>start</sysOperation>
@@ -11,7 +11,8 @@
 	<output>
 	<outputType>network</outputType>
 	<fileName>output.ts</fileName>
-	<ipAddress></ipAddress>
+	<networkIP>172.18.16.4</networkIP>
+	<networkPort>12380</networkPort>
 	</output>
 	<inputChannel>
 	<inputChannelIndex>0</inputChannelIndex>
@@ -28,5 +29,5 @@
 	<output_bitrate>5000000</output_bitrate>
 	<output_video_bitrate>1000000</output_video_bitrate>
 	</output_channel>
-</config> 
+</faucetConfig> 
 
