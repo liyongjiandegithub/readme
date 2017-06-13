@@ -17,7 +17,7 @@
 	<inputChannel>
 	<inputChannelIndex>0</inputChannelIndex>
 	<input_video_type>MPEG2</input_video_type>
-	<input_video_PID>1000</input_video_PID>
+	<input_video_PID>1007</input_video_PID>
 	<input_PCR_PID>1000</input_PCR_PID>
 	<input_audio_PID>1002</input_audio_PID>
 	</inputChannel>

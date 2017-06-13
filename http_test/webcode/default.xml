@@ -1,33 +1,36 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <!--  Copyright http://www.faucet.com.cn/ -->
 <faucetConfig>
-    <configTitle>Faucet Config</configTitle>
-	<sysStatus>initial</sysStatus>
-	<sysOperation>start</sysOperation>
-	<erroMessage>Everythins is fine!</erroMessage>
-	<input>
-	<inputType>file</inputType>
-	</input>
-	<output>
-	<outputType>network</outputType>
-	<fileName>output.ts</fileName>
-	<networkIP>172.18.16.4</networkIP>
-	<networkPort>12380</networkPort>
-	</output>
+    <sysCfg>
+        <configTitle>Faucet Config</configTitle>
+    	<sysStatus>initial</sysStatus>
+    	<sysOperation>start</sysOperation>
+    	<erroMessage>Everythins is fine!</erroMessage>
+    </sysCfg>
+	<inputCfg>
+    	<inputType>file</inputType>
+	</inputCfg>
+	<outputCfg>
+    	<outputType>network</outputType>
+    	<fileName>output.ts</fileName>
+    	<networkIP>172.18.16.4</networkIP>
+    	<networkPort>12380</networkPort>
+    	<output_TS_bitrate>5000000</output_TS_bitrate>
+	</outputCfg>
 	<inputChannel>
-	<inputChannelIndex>0</inputChannelIndex>
-	<input_video_type>MPEG2</input_video_type>
-	<input_video_PID>1000</input_video_PID>
-	<input_PCR_PID>1001</input_PCR_PID>
-	<input_audio_PID>1002</input_audio_PID>
+    	<inputChannelIndex>0</inputChannelIndex>
+    	<input_video_type>MPEG2</input_video_type>
+    	<input_video_PID>1000</input_video_PID>
+    	<input_PCR_PID>1001</input_PCR_PID>
+    	<input_audio_PID>1002</input_audio_PID>
 	</inputChannel>
 	<output_channel>
-	<input_video_type>H.264</input_video_type>
-	<output_video_PID>1000</output_video_PID>
-	<output_PCR_PID>1001</output_PCR_PID>
-	<output_audio_PID>1002</output_audio_PID>
-	<output_bitrate>5000000</output_bitrate>
-	<output_video_bitrate>1000000</output_video_bitrate>
+    	<output_video_type>H.264</output_video_type>
+    	<output_video_PID>1000</output_video_PID>
+    	<output_PCR_PID>1001</output_PCR_PID>
+    	<output_audio_PID>1002</output_audio_PID>
+    	<output_video_bitrate>1200000</output_video_bitrate>
+    	<source_channel_index>2</source_channel_index>
 	</output_channel>
 </faucetConfig> 
 
