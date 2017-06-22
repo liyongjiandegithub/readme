@@ -37,6 +37,22 @@
 </style>
 
 <script type="text/javascript">
+    function onInputVideoType(){
+        var inputVideoType = document.getElementsByName('input_video_type');
+            for (var i = 0; i < inputVideoType.length; i++) {
+                if (inputVideoType[i].checked == true) {
+                    xmlDocCfg.getElementsByTagName("input_video_type")[0].childNodes[0].nodeValue  =inputVideoType[i].value;
+                }
+            }
+    }
+    function onOutputVideoType(){
+        var outputVideoType = document.getElementsByName('output_video_type');
+            for (var i = 0; i < outputVideoType.length; i++) {
+                if (outputVideoType[i].checked == true) {
+                    xmlDocCfg.getElementsByTagName("output_video_type")[0].childNodes[0].nodeValue  =outputVideoType[i].value;
+                }
+            }
+    }
     function changeOutput(){
         //var outValue = $("input[name='output']:checked").val();
         var isOutput = document.getElementsByName('output');
@@ -46,18 +62,19 @@
                 }
             }
 
-        if(outValue=='file'){//!ö
+        if(outValue=='file'){//!?
             document.getElementById("div_file_output").style.display='block';
             document.getElementById("div_network_output").style.display='none';
             //$("#div_file_output").css("display","block");
             //$("#div_network_output").css("display","none");
-        }else if(outValue=='network'){//QÜ
+        }else if(outValue=='network'){//Q?
             document.getElementById("div_file_output").style.display='none';
             document.getElementById("div_network_output").style.display='block';
             //$("#div_file_output").css("display","none");
             //$("#div_network_output").css("display","block");
         }
     }
+
     var xmlDocCfg;
     // DisplayBox
     function display(message) {
@@ -166,7 +183,7 @@
             <div class="linestyle"><label for="">TS bitrate:</label><input id="output_TS_bitrate" style="width: 50px;margin-left: 5px" type="text" name=""> bps</div>
             <br><br>
             <hr>
-            <div class="linestyle"><label for="output_video_type">MPEG2</label><input type="radio" name="output_video_type" checked="checked" value="MPEG2" onclick="updateOutputType();"> <label for="output_video_type">H.264</label><input type="radio" value="H.264" name="output_video_type" onclick="updateOutputType();"></div>
+            <div class="linestyle"><label for="output_video_type">MPEG2</label><input type="radio" name="output_video_type" checked="checked" value="MPEG2" onclick="onOutputVideoType();"> <label for="output_video_type">H.264</label><input type="radio" value="H.264" name="output_video_type" onclick="onOutputVideoType();"></div>
             <div class="linestyle"><label for="">video bitrate:</label><input id="output_video_bitrate" style="width: 50px;margin-left: 5px" type="text" name=""> bps</div>
             <div class="linestyle"><label>Source Program:</label> <select id="source_channel_index">
                     <option>1</option>
