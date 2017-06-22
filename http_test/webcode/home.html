@@ -37,7 +37,7 @@
 </style>
 
 <script type="text/javascript">
-    function onInputVideoType(){
+    function onInputVideoType(xmlDocCfg){
         var inputVideoType = document.getElementsByName('input_video_type');
             for (var i = 0; i < inputVideoType.length; i++) {
                 if (inputVideoType[i].checked == true) {
@@ -45,7 +45,7 @@
                 }
             }
     }
-    function onOutputVideoType(){
+    function onOutputVideoType(xmlDocCfg){
         var outputVideoType = document.getElementsByName('output_video_type');
             for (var i = 0; i < outputVideoType.length; i++) {
                 if (outputVideoType[i].checked == true) {
@@ -75,11 +75,10 @@
         }
     }
 
-    var xmlDocCfg;
     // DisplayBox
     function display(message) {
         parser=new DOMParser();
-        xmlDocCfg = parser.parseFromString(message,"text/xml");
+        var xmlDocCfg = parser.parseFromString(message,"text/xml");
 
         document.getElementById("configTitle").value =xmlDocCfg.getElementsByTagName("configTitle")[0].childNodes[0].nodeValue;
         document.getElementById("sysStatus").value=xmlDocCfg.getElementsByTagName("sysStatus")[0].childNodes[0].nodeValue;
@@ -103,6 +102,10 @@
         //document.getElementById("output_video_type").value=xmlDocCfg.getElementsByTagName("output_video_type")[0].childNodes[0].nodeValue;
         document.getElementById("output_video_bitrate").value=xmlDocCfg.getElementsByTagName("output_video_bitrate")[0].childNodes[0].nodeValue;
         document.getElementById("source_channel_index").value=xmlDocCfg.getElementsByTagName("source_channel_index")[0].childNodes[0].nodeValue;
+        document.getElementById("output_video_PID").value=xmlDocCfg.getElementsByTagName("output_video_PID")[0].childNodes[0].nodeValue;
+        document.getElementById("output_PCR_PID").value=xmlDocCfg.getElementsByTagName("output_PCR_PID")[0].childNodes[0].nodeValue;
+        document.getElementById("output_audio_PID").value=xmlDocCfg.getElementsByTagName("output_audio_PID")[0].childNodes[0].nodeValue;
+        sendXMLCfg();
     }        
 
     // XMLHttpRequest
@@ -121,26 +124,32 @@
     }        
 
     function sendXMLCfg() {
-        var xhr = new XMLHttpRequest();
-        xhr.timeout = 3000;
-        xhr.responseType = "text";
-        xhr.open('POST', '/', true);
+        //alert(xhr.responseText);
+        newparser=new DOMParser();
+        var newxmlDocCfg = newparser.parseFromString(xhr.responseText,"text/xml");
+
+        var postxhr = new XMLHttpRequest();
+        postxhr.timeout = 3000;
+        postxhr.responseType = "text";
+        postxhr.open('POST', '/', true);
+
+        newxmlDocCfg.getElementsByTagName("sysOperation")[0].childNodes[0].nodeValue = document.getElementById("sysOperation").value;
         //Update config
-        xmlDocCfg.getElementsByTagName("input_video_PID")[0].childNodes[0].nodeValue  = document.getElementById("input_video_PID").value;
-        xmlDocCfg.getElementsByTagName("input_PCR_PID")[0].childNodes[0].nodeValue  = document.getElementById("input_PCR_PID").value;
-        xmlDocCfg.getElementsByTagName("input_audio_PID")[0].childNodes[0].nodeValue  = document.getElementById("input_audio_PID").value;
+        newxmlDocCfg.getElementsByTagName("input_video_PID")[0].childNodes[0].nodeValue  = document.getElementById("input_video_PID").value;
+        newxmlDocCfg.getElementsByTagName("input_PCR_PID")[0].childNodes[0].nodeValue  = document.getElementById("input_PCR_PID").value;
+        newxmlDocCfg.getElementsByTagName("input_audio_PID")[0].childNodes[0].nodeValue  = document.getElementById("input_audio_PID").value;
 
         //xhr.send(xmlDocCfg.getElementsByTagName("input_audio_PID"));
-        xhr.send(xmlDocCfg);
+        postxhr.send(newxmlDocCfg);
     }        
 
     function start_stop() {
+
         if(document.getElementById("sysOperation").value=="start"){
             document.getElementById("sysOperation").value="stop";
         }else if(document.getElementById("sysOperation").value=="stop"){
             document.getElementById("sysOperation").value="start" ;
         }                      
-        xmlDocCfg.getElementsByTagName("sysOperation")[0].childNodes[0].nodeValue = document.getElementById("sysOperation").value;
         sendXMLCfg();
     }        
 
@@ -150,7 +159,7 @@
     <h1 id="configTitle" style="text-align: center;"></h1>
     <form name="configform" action="" method="post">
         <p align="center"><input type="button" id="sysOperation" onclick="start_stop()"></p>
-        <p align="right"><input type="button" value="SaveCfg" onclick="sendXMLCfg()"></p>
+        <p align="right"><input type="button" value="SaveCfg" onclick="saveXMLCfg()"></p>
     </form>
 
     <p>
@@ -169,9 +178,9 @@
                 <input type="radio" name="input_video_type" value="H.264" onclick="onInputVideoType();">
             </div>
             <div>PID Selection</div>
-            <label for="">Video:</label><input id="input_video_PID" type="text"><br>
-            <label for="">Video:</label><input id="input_PCR_PID" type="text"><br>
-            <label for="">Audio:</label><input id="input_audio_PID" type="text"><br>
+            <div class="linestyle"><label for="">Video:</label><input id="input_video_PID" type="text"></div>
+            <div class="linestyle"><label for="">Video:</label><input id="input_PCR_PID" type="text"></div>
+            <div class="linestyle"><label for="">Audio:</label><input id="input_audio_PID" type="text"></div>
         </div>
 
         <div class="right">
@@ -191,6 +200,10 @@
                     <option>3</option>
                 </select>
             </div>
+            <div>PID Selection</div>
+            <div class="linestyle"><label for="">Video:</label><input id="output_video_PID" type="text"></div>
+            <div class="linestyle"><label for="">Video:</label><input id="output_PCR_PID" type="text"></div>
+            <div class="linestyle"><label for="">Audio:</label><input id="output_audio_PID" type="text"></div>
         </div>
     </div>
 </body>
