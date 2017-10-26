@@ -88,7 +88,9 @@ git push origin v0.1.2
 # Push all local tags
 git push origin -tags
 
+#########################################
 #Set user name/email address
+#########################################
 git config --global user.name "John Doe"
 git config --global user.email johndoe@example.com 
 git config user.email johndoe@example.com 

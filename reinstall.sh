@@ -20,6 +20,13 @@ sudo rpm -e DXUDriver-7753
 sudo rpm -e DXOpenSource
 sudo rpm -e DXStatMux2Core
 sudo rpm -e DXStatMux2
+sudo rpm -e R12U-CPU
+sudo rpm -e CPUHostUtil
+sudo rpm -e CPUOpenSource
+sudo rpm -e CPUStatMux2Core
+sudo rpm -e CPUStatMux2
+sudo rpm -e CPUHostAPI
+sudo rpm -e CPUDriver
 
 
 #install new sudo rpm
@@ -33,4 +40,12 @@ sudo rpm -i *DXStatMux2Core*.rpm
 sudo rpm -i *DXStatMux2-*.rpm
 sudo rpm -i *DX-XCODE*.rpm
 sudo rpm -i *R12COpenSource*.rpm
+sudo rpm -i *CPUDriver*.rpm
+sudo rpm -i *CPUHostAPI*.rpm
+sudo rpm -i *CPUHostUtil*.rpm
+sudo rpm -i *CPUOpenSource*.rpm
+sudo rpm -i *CPUStatMux2Core*.rpm
+sudo rpm -i *CPUStatMux2-*.rpm
+sudo rpm -i *R12U-CPU*.rpm
+
 

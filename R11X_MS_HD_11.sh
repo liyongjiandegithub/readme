@@ -79,7 +79,8 @@ cd /usr/local/dx7753/bin
 ./multiInit.pl -product 11CX -startChip $chip;
 #./multiRun.pl -startChip $chip;
 #/root/bshen/code/503/cware/x86/startup/r12c -c $chip &
-/root/yli/git_1663/cware-repo/x86/startup/r12c -c $chip &
+#/root/yli/git_1663/cware-repo/x86/startup/r12c -c $chip &
+/lsi/home/yli/r12cpu/cware-repo/x86/startup/r12c_unsec -c $chip &
 
 ./xcode.queryAudioAlloc.pl -file $AudioConfigFilePath  -startChip $chip;
 ./xcode.configSystem.pl -u32SystemConfigA 25 -u32SystemConfigB 19 -startChip $chip;
